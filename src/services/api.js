@@ -1,44 +1,27 @@
-const API_URL = "http://localhost:3000/api";
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 async function request(endpoint, options = {}) {
+  const token = sessionStorage.getItem('socialhub_token');
   const response = await fetch(`${API_URL}${endpoint}`, {
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers
-    },
-    ...options
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options.headers }
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error || "Something went wrong.");
-  }
-
+  if (!response.ok) throw new Error(data.error?.message || 'Request failed');
+  return data.data;
+}
+export async function login(email, password) {
+  const data = await request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+  sessionStorage.setItem('socialhub_token', data.token);
   return data;
 }
-
-export function login(email, password) {
-  return request("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password })
-  });
+export async function register(name, email, password) {
+  await request('/auth/register', { method: 'POST', body: JSON.stringify({ display_name: name, email, password }) });
+  return login(email, password);
 }
-
-export function register(name, email, password) {
-  return request("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({ name, email, password })
-  });
+export async function logout() {
+  try { return await request('/auth/logout', { method: 'POST' }); }
+  finally { sessionStorage.removeItem('socialhub_token'); }
 }
+export async function getCurrentUser() { return { user: await request('/auth/me') }; }
 
-export function logout() {
-  return request("/auth/logout", {
-    method: "POST"
-  });
-}
 
-export function getCurrentUser() {
-  return request("/auth/me");
-}

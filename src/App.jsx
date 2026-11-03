@@ -1,6 +1,6 @@
 import { BrowserRouter, NavLink, Routes, Route, Navigate } from "react-router-dom";
 import {LayoutDashboard, Users, MessageSquare, CalendarDays, BarChart3, Settings,
-        Search, Bell, Plus, TrendingUp, Heart, Eye, Send, Menu, X } from "lucide-react";
+        Search, Bell, Plus, TrendingUp, Heart, Eye, Send, Menu, X, RefreshCw, MessageCircle } from "lucide-react";
 import "./App.css";
 import { useState, useEffect } from "react";
 import Login from "./pages/Login";
@@ -484,7 +484,7 @@ function App() {
             </button>
 
             <div className="top-avatar">
-              {user.name ? user.name.substring(0, 2).toUpperCase() : "NJ"}
+              {user.display_name ? user.display_name.substring(0, 2).toUpperCase() : "NJ"}
             </div>
           </div>
         </header>
