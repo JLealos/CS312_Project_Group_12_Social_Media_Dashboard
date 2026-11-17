@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Vite forwards same-origin /api requests to Express during local development.
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 async function request(endpoint, options = {}) {
   const token = sessionStorage.getItem('socialhub_token');
   const response = await fetch(`${API_URL}${endpoint}`, {
